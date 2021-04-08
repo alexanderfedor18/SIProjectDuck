@@ -9,11 +9,17 @@ public class Player : MonoBehaviour
 
     //public variables
 
-    public float moveSpeed = 6;
-    public float jumpHeight = 5;
+    public float moveSpeed;
+    public float jumpHeight;
+    public float startTimeBetweenShots;
     //layer containing the only objects we want checkGrounded raycast to hit
     public LayerMask platformLayerMask;
     public GameObject gun;
+    public GameObject projectile;
+    public Transform shotPoint;
+
+
+    private float timeBetweenShots;
 
 
     //private variables
@@ -21,12 +27,11 @@ public class Player : MonoBehaviour
     private Rigidbody2D rb;
     [SerializeField]
     private BoxCollider2D boxCollider2d;
-    private bool lookingRight = true;
     //x movement direction
     private float moveInput;
     //if player has jumped
     private bool jumped = false;
-
+    private bool shooting = false;
 
     //Mouse and Controller Position
     private Vector2 mousePosition;
@@ -41,6 +46,7 @@ public class Player : MonoBehaviour
         //initialize variables
         rb = GetComponent<Rigidbody2D>();
         boxCollider2d = transform.GetComponent<BoxCollider2D>();
+        
     }
     // Start is called before the first frame update
     void Start()
@@ -52,15 +58,17 @@ public class Player : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        isGrounded();
+
+        IsGrounded();
+        Shoot();
         if (isMouse)
         {
             Vector3 relativePosition = Camera.main.ScreenToWorldPoint(mousePosition) - transform.position;
-            rotateGun(new Vector2(relativePosition.x, relativePosition.y));
+            RotateGun(new Vector2(relativePosition.x, relativePosition.y));
         } else
         {
             if (controllerPosition != new Vector2(0,0))
-            rotateGun(controllerPosition);
+            RotateGun(controllerPosition);
         }
 
 
@@ -78,7 +86,7 @@ public class Player : MonoBehaviour
         }
         else
             Debug.LogWarning("Rigidbody not attatched to player " + gameObject.name);
-        if (isGrounded())
+        if (IsGrounded())
         {
             
         }
@@ -116,18 +124,31 @@ public class Player : MonoBehaviour
         isMouse = false;
     }
 
+
+    public void OnShoot(InputAction.CallbackContext context)
+    {
+
+        if (context.ReadValue<float>() > 0)
+        {
+            shooting = true;
+        }
+        else
+            shooting = false;
+
+    
+        
+    }
+
     //uses the move set through the PlayerControls to set the velocity of the player
     void applyMovement()
     {
         //checks if moving left then if moving right
         if (moveInput < 0)
         {
-            lookingRight = false;
             rb.velocity = new Vector2(-moveSpeed, rb.velocity.y);
         }
         else if (moveInput > 0)
         {
-            lookingRight = true;
             rb.velocity = new Vector2(moveSpeed, rb.velocity.y);
         }
     }
@@ -135,7 +156,7 @@ public class Player : MonoBehaviour
 
     void applyJump()
     {
-        if (jumped && isGrounded())
+        if (jumped && IsGrounded())
         {
             rb.velocity = Vector2.up*jumpHeight;
             //rb.AddForce(new Vector2(0, jumpHeight));
@@ -144,7 +165,7 @@ public class Player : MonoBehaviour
     }
 
     //checks if the player is touching the ground using a boxCast
-    bool isGrounded()
+    bool IsGrounded()
     {
 
         
@@ -171,15 +192,30 @@ public class Player : MonoBehaviour
 
 
 
-    private void rotateGun(Vector2 position)
+    private void RotateGun(Vector2 position)
     {
         float rotation = Mathf.Atan2(position.y, position.x) * Mathf.Rad2Deg;
         Quaternion temp = Quaternion.Euler(0f, 0f, rotation);
         gun.transform.rotation = temp;
-
+        
     }
 
+    private void Shoot()
+    {
+        if (shooting)
+        {
+            if (timeBetweenShots <= 0)
+            {
+                Instantiate(projectile, shotPoint.position, gun.transform.rotation);
+                timeBetweenShots = startTimeBetweenShots;
 
+            }
+            else
+            {
+                timeBetweenShots -= Time.deltaTime;
+            }
+        } 
+    }
 
 
 }

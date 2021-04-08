@@ -64,7 +64,7 @@ public class @PlayerControls : IInputActionCollection, IDisposable
                     ""id"": ""2eb91b74-d454-449a-9cd2-c8c4f6bf421d"",
                     ""expectedControlType"": ""Button"",
                     ""processors"": """",
-                    ""interactions"": """"
+                    ""interactions"": ""Hold(duration=0.01)""
                 }
             ],
             ""bindings"": [
