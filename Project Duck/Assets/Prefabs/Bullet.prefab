@@ -117,5 +117,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9edb2ba0990f55849a10cd3fa2fbd384, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  flySpeed: 7
-  timeToDelete: 2
+  speed: 10
+  lifetime: 1.5
+  distance: 0
+  whatIsSolid:
+    serializedVersion: 2
+    m_Bits: 64
