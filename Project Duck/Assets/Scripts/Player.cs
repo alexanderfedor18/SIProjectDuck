@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using TMPro;
 
 [RequireComponent(typeof(Rigidbody2D))]
 public class Player : MonoBehaviour
@@ -18,6 +19,9 @@ public class Player : MonoBehaviour
     public Transform shotPoint;
 
     public int health;
+    [SerializeField]
+    private SpriteRenderer hearts;
+    public Sprite[] heartSprites;
 
     private float timeBetweenShots;
 
@@ -33,6 +37,7 @@ public class Player : MonoBehaviour
     private float moveInput;
     //if player has jumped
     private bool jumped = false;
+    private bool doubleJumped = false;
     private bool shooting = false;
 
     //Mouse and Controller Position
@@ -53,8 +58,16 @@ public class Player : MonoBehaviour
 
     private List<int> bullets;
     [SerializeField]
-    private float startReloadCooldown = 3;
+    private float startReloadCooldown = 2;
     private float timeBetweenReload;
+
+    //dash cooldown
+    private bool dashAvailable = true;
+    private float startDashCooldown = .75f;
+    private float dashCooldown;
+
+
+    private Scoreboard scoreboard;
 
     //Awake is called before Start
     void Awake()
@@ -66,8 +79,16 @@ public class Player : MonoBehaviour
         dashTime = startDashTime;
         timeBetweenReload = startReloadCooldown;
         bullets = new List<int>();
+        dashCooldown = 0;
+        hearts.sprite = heartSprites[health - 1];
+        scoreboard = GetComponent<Scoreboard>();
+
     }
-    
+
+    private void Start()
+    {
+        Debug.Log(health);
+    }
 
     public void InitializePlayer(PlayerConfig pc, int playerNum)
     {
@@ -82,6 +103,7 @@ public class Player : MonoBehaviour
             isMouseAndKeyboard = true;
         }
 
+        this.playerNum = playerNum;
         if (playerNum == 1)
         {
             gameObject.layer = LayerMask.NameToLayer("Player1");
@@ -93,7 +115,6 @@ public class Player : MonoBehaviour
             gameObject.tag = "Player2";
             mainBox.GetComponent<SpriteRenderer>().color = new Color(0.6588235f, 0.2470588f, 0.3321685f, 1);
         }
-        this.playerNum = playerNum;
     }
 
     private void Input_onActionTriggered(InputAction.CallbackContext obj)
@@ -120,6 +141,8 @@ public class Player : MonoBehaviour
         if (!isMouseAndKeyboard)
 
         IsGrounded();
+        if (IsGrounded())
+            doubleJumped = false;
         ApplyShoot();
         if (isMouseAndKeyboard)
         {
@@ -181,8 +204,6 @@ public class Player : MonoBehaviour
 
     public void OnShoot(InputAction.CallbackContext context)
     {
-
-        
         if (context.ReadValue<float>() > 0)
         {
             shooting = true;
@@ -197,8 +218,21 @@ public class Player : MonoBehaviour
 
     public void OnDash(InputAction.CallbackContext context)
     {
-        dashing = context.action.triggered;
-        dashTime = startDashTime;
+        if (context.action.triggered && dashCooldown <= 0)
+        {
+            dashing = true;
+            dashTime = startDashTime;
+        } else
+        {
+            if (dashing == true)
+            {
+                dashCooldown = startDashCooldown;
+                dashAvailable = false;
+            }
+            dashing = false;
+        }
+
+
     }
 
 
@@ -227,15 +261,17 @@ public class Player : MonoBehaviour
         {
             rb.velocity = Vector2.up*jumpHeight;
             //rb.AddForce(new Vector2(0, jumpHeight));
+        } else if (jumped && !IsGrounded() && !doubleJumped)
+        {
+            rb.velocity = Vector2.up * jumpHeight;
+            doubleJumped = true;
         }
         jumped = false;
     }
 
     //checks if the player is touching the ground using a boxCast
     bool IsGrounded()
-    {
-        
-        
+    {        
         float extraHeightText = .1f;
         RaycastHit2D rayCasthit = Physics2D.BoxCast(boxCollider2d.bounds.center, boxCollider2d.bounds.size, 0f, Vector2.down, extraHeightText, platformLayerMask);
         
@@ -285,37 +321,72 @@ public class Player : MonoBehaviour
 
     private void ApplyDash()
     {
-        if (dashing)
+        if (dashAvailable)
         {
-            //if the dash has fully finished, ends the dash
-            if (dashTime <= 0)
+            
+            if (dashing)
             {
-                dashing = false;
-                gameObject.tag = "Player" + playerNum;
-            } else
-            {
-                gameObject.tag = "Invulnerable";
-                dashTime -= Time.deltaTime;
-                if (moveInput < 0)
-                {
-                    rb.velocity = Vector2.left * dashSpeed;
-                } else if (moveInput > 0)
-                {
-                    rb.velocity = Vector2.right * dashSpeed;
-                } else
+                //if the dash has fully finished, ends the dash
+                if (dashTime <= 0)
                 {
                     dashing = false;
+                    gameObject.tag = "Player" + playerNum;
+                    dashAvailable = false;
                 }
+                else
+                {
+                    gameObject.tag = "Invulnerable";
+                    dashTime -= Time.deltaTime;
+                    dashCooldown = startDashCooldown;
+                    if (moveInput < 0)
+                    {
+                        rb.velocity = Vector2.left * dashSpeed;
+                    }
+                    else if (moveInput > 0)
+                    {
+                        rb.velocity = Vector2.right * dashSpeed;
+                    }
+                    else
+                    {
+                        dashing = false;
+                        dashAvailable = false;
+                        dashCooldown = startDashCooldown;
+                    }
+                }
+
             }
-
+        } else
+        {
+            if (dashCooldown <= 0)
+            {
+                dashAvailable = true;
+            }
+            else
+                dashCooldown -= Time.deltaTime;
         }
-
-    } 
+        
+    }
 
 
     public void TakeDamage(int damage)
     {
         health -= damage;
+        if (health <= 0)
+        {
+            scoreboard = FindObjectOfType<Canvas>().GetComponentInChildren<Scoreboard>();
+            scoreboard.updateScore(playerNum);
+        }
+        else
+        {
+            hearts.sprite = heartSprites[health - 1];
+            gameObject.tag = "Invulnerable";
+            Invoke("stopInvul", 2f);
+        }
+    }
+
+    private void stopInvul()
+    {
+        gameObject.tag = "Player" + playerNum;
     }
 
 

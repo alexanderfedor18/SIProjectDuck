@@ -57,13 +57,15 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Assets\PlayerControls.cs" />
-    <Compile Include="Assets\MainMenu.cs" />
-    <Compile Include="Assets\InitializeLevel.cs" />
+    <Compile Include="Assets\Scripts\MainMenu.cs" />
+    <Compile Include="Assets\Scripts\InitializeLevel.cs" />
     <Compile Include="Assets\Scripts\Player.cs" />
     <Compile Include="Assets\Scripts\Bullet.cs" />
-    <Compile Include="Assets\PlayerSetupMenuController.cs" />
+    <Compile Include="Assets\Scripts\PlayerSetupMenuController.cs" />
     <Compile Include="Assets\Scripts\PlayerConfigurationManager.cs" />
-    <Compile Include="Assets\SpawnPlayerSetupMenu.cs" />
+    <Compile Include="Assets\Scripts\SpawnPlayerSetupMenu.cs" />
+    <Compile Include="Assets\Scripts\Scoreboard.cs" />
+    <Compile Include="Assets\Scripts\FinalScreen.cs" />
   </ItemGroup>
   <ItemGroup>
      <None Include="Assets\TextMesh Pro\Shaders\TMPro.cginc" />

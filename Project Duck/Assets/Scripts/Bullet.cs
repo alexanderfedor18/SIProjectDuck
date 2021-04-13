@@ -25,11 +25,11 @@ public class Bullet : MonoBehaviour
         {
             if (hitInfo.collider.CompareTag("Player1"))
             {
-                Debug.Log("Player 1 Got HIT");
+                hitInfo.collider.GetComponent<Player>().TakeDamage(1);
             }
             else if (hitInfo.collider.CompareTag("Player2"))
             {
-                Debug.Log("Player 2 got smacked yo");
+                hitInfo.collider.GetComponent<Player>().TakeDamage(1);
             }
             if (!hitInfo.collider.CompareTag("Invulnerable"))
             {

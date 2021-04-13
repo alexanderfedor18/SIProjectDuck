@@ -43,7 +43,7 @@
                     "id": "4a9ea5ae-124e-4062-8b4c-ddf06d4d6808",
                     "expectedControlType": "Button",
                     "processors": "",
-                    "interactions": ""
+                    "interactions": "Press"
                 },
                 {
                     "name": "Shoot",
@@ -59,7 +59,7 @@
                     "id": "2faac255-5f92-4a87-8c07-f634472108cf",
                     "expectedControlType": "Button",
                     "processors": "",
-                    "interactions": "Press(behavior=2)"
+                    "interactions": ""
                 }
             ],
             "bindings": [
@@ -166,7 +166,7 @@
                     "name": "",
                     "id": "a4647381-3086-4053-8d3b-d215c4ab850d",
                     "path": "<Gamepad>/start",
-                    "interactions": "Press(behavior=2)",
+                    "interactions": "",
                     "processors": "",
                     "groups": "Gamepad",
                     "action": "Select",
@@ -177,7 +177,7 @@
                     "name": "",
                     "id": "3548fff8-5d3d-4119-8a9d-d6b14522ad37",
                     "path": "<Keyboard>/numpadEnter",
-                    "interactions": "Press(behavior=2)",
+                    "interactions": "",
                     "processors": "",
                     "groups": "Keyboard",
                     "action": "Select",
@@ -188,7 +188,7 @@
                     "name": "",
                     "id": "06f9f6ad-a939-4b84-8d2d-2580370b2c3d",
                     "path": "<Keyboard>/enter",
-                    "interactions": "Press(behavior=2)",
+                    "interactions": "",
                     "processors": "",
                     "groups": "Keyboard",
                     "action": "Select",
@@ -199,9 +199,9 @@
                     "name": "",
                     "id": "0635d9fa-9407-476d-8900-c7fc60a398b6",
                     "path": "<Gamepad>/buttonSouth",
-                    "interactions": "Press(behavior=2)",
+                    "interactions": "",
                     "processors": "",
-                    "groups": "",
+                    "groups": "Gamepad",
                     "action": "Select",
                     "isComposite": false,
                     "isPartOfComposite": false
