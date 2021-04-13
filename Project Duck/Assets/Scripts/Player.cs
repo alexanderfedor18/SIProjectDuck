@@ -380,11 +380,11 @@ public class Player : MonoBehaviour
         {
             hearts.sprite = heartSprites[health - 1];
             gameObject.tag = "Invulnerable";
-            Invoke("stopInvul", 2f);
+            Invoke("StopInvul", 2f);
         }
     }
 
-    private void stopInvul()
+    private void StopInvul()
     {
         gameObject.tag = "Player" + playerNum;
     }
