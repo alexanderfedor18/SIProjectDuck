@@ -8,7 +8,6 @@ public class Player : MonoBehaviour
 {
 
     //public variables
-
     public float moveSpeed;
     public float jumpHeight;
     public float startTimeBetweenShots;
@@ -18,6 +17,7 @@ public class Player : MonoBehaviour
     public GameObject projectile;
     public Transform shotPoint;
 
+    public int health;
 
     private float timeBetweenShots;
 
@@ -27,6 +27,8 @@ public class Player : MonoBehaviour
     private Rigidbody2D rb;
     [SerializeField]
     private BoxCollider2D boxCollider2d;
+    [SerializeField]
+    private GameObject mainBox;
     //x movement direction
     private float moveInput;
     //if player has jumped
@@ -41,7 +43,18 @@ public class Player : MonoBehaviour
     private PlayerConfig playerConfig;
     private PlayerControls controls;
 
+    private Vector2 directionInput;
+    private bool dashing;
+    public float dashSpeed;
+    public float startDashTime;
+    private float dashTime;
 
+    private int playerNum;
+
+    private List<int> bullets;
+    [SerializeField]
+    private float startReloadCooldown = 3;
+    private float timeBetweenReload;
 
     //Awake is called before Start
     void Awake()
@@ -50,13 +63,11 @@ public class Player : MonoBehaviour
         rb = GetComponent<Rigidbody2D>();
         boxCollider2d = transform.GetComponent<BoxCollider2D>();
         controls = new PlayerControls();
-        
+        dashTime = startDashTime;
+        timeBetweenReload = startReloadCooldown;
+        bullets = new List<int>();
     }
-    // Start is called before the first frame update
-    void Start()
-    {
-
-    }
+    
 
     public void InitializePlayer(PlayerConfig pc, int playerNum)
     {
@@ -71,16 +82,18 @@ public class Player : MonoBehaviour
             isMouseAndKeyboard = true;
         }
 
-
         if (playerNum == 1)
         {
             gameObject.layer = LayerMask.NameToLayer("Player1");
             gameObject.tag = "Player1";
+            mainBox.GetComponent<SpriteRenderer>().color = new Color(0.246084f, 0.3541024f, 0.6603774f, 1);
         } else
         {
             gameObject.layer = LayerMask.NameToLayer("Player2");
             gameObject.tag = "Player2";
+            mainBox.GetComponent<SpriteRenderer>().color = new Color(0.6588235f, 0.2470588f, 0.3321685f, 1);
         }
+        this.playerNum = playerNum;
     }
 
     private void Input_onActionTriggered(InputAction.CallbackContext obj)
@@ -95,6 +108,8 @@ public class Player : MonoBehaviour
             OnControllerMove(obj);
         else if (obj.action.name == controls.PlayerActions.Shoot.name)
             OnShoot(obj);
+        else if (obj.action.name == controls.PlayerActions.Dash.name)
+            OnDash(obj);
 
     }
 
@@ -124,8 +139,9 @@ public class Player : MonoBehaviour
     {
         if (rb != null)
         {
-            applyMovement();
+            ApplyMovement();
             ApplyJump();
+            ApplyDash();
         }
         else
             Debug.LogWarning("Rigidbody not attatched to player " + gameObject.name);
@@ -136,8 +152,8 @@ public class Player : MonoBehaviour
     //used to update the moveInput float value with which direction the input wants the character to move
     public void OnMovement(InputAction.CallbackContext context)
     {
+        directionInput = context.ReadValue<Vector2>();
 
-        moveInput = context.ReadValue<float>();
     }
 
     //used to update the jumped bool to check if the player has jumped
@@ -179,9 +195,17 @@ public class Player : MonoBehaviour
         
     }
 
-    //uses the move set through the PlayerControls to set the velocity of the player
-    void applyMovement()
+    public void OnDash(InputAction.CallbackContext context)
     {
+        dashing = context.action.triggered;
+        dashTime = startDashTime;
+    }
+
+
+    //uses the move set through the PlayerControls to set the velocity of the player
+    void ApplyMovement()
+    {
+        moveInput = directionInput.x;
         //checks if moving left then if moving right
         if (moveInput < 0)
         {
@@ -190,6 +214,9 @@ public class Player : MonoBehaviour
         else if (moveInput > 0)
         {
             rb.velocity = new Vector2(moveSpeed, rb.velocity.y);
+        } else
+        {
+            rb.velocity = new Vector2(0, rb.velocity.y);
         }
     }
 
@@ -207,26 +234,11 @@ public class Player : MonoBehaviour
     //checks if the player is touching the ground using a boxCast
     bool IsGrounded()
     {
-
+        
         
         float extraHeightText = .1f;
         RaycastHit2D rayCasthit = Physics2D.BoxCast(boxCollider2d.bounds.center, boxCollider2d.bounds.size, 0f, Vector2.down, extraHeightText, platformLayerMask);
         
-        Color rayColor;
-        if (rayCasthit.collider != null)
-        {
-            rayColor = Color.green;
-        } else
-        {
-            rayColor = Color.red;
-        }
-
-        //draws box showing boxcast
-        Debug.DrawRay(boxCollider2d.bounds.center + new Vector3(boxCollider2d.bounds.extents.x, 0), Vector2.down * (boxCollider2d.bounds.extents.y + extraHeightText), rayColor);
-        Debug.DrawRay(boxCollider2d.bounds.center - new Vector3(boxCollider2d.bounds.extents.x, 0), Vector2.down * (boxCollider2d.bounds.extents.y + extraHeightText), rayColor);
-        Debug.DrawRay(boxCollider2d.bounds.center - new Vector3(boxCollider2d.bounds.extents.x, boxCollider2d.bounds.extents.y + extraHeightText), Vector2.right * (boxCollider2d.bounds.extents.x), rayColor);
-
-
         return rayCasthit.collider != null;
     }
 
@@ -242,17 +254,68 @@ public class Player : MonoBehaviour
 
     private void ApplyShoot()
     {
-        if (timeBetweenShots <= 0)
+        if (bullets.Count < 4)
         {
-            if (shooting)
+            if (timeBetweenShots <= 0)
             {
-                Instantiate(projectile, shotPoint.position, gun.transform.rotation);
-                timeBetweenShots = startTimeBetweenShots;
+                if (shooting)
+                {
+                    Instantiate(projectile, shotPoint.position, gun.transform.rotation);
+                    bullets.Add(1);
+                    timeBetweenShots = startTimeBetweenShots;
+                }
+            }
+            else
+            {
+                timeBetweenShots -= Time.deltaTime;
             }
         } else
         {
-            timeBetweenShots -= Time.deltaTime;
+            if (timeBetweenReload <= 0)
+            {
+                bullets.Clear();
+                timeBetweenReload = startReloadCooldown;
+            }
+            else
+            {
+                timeBetweenReload -= Time.deltaTime;
+            }
         }
+    }
+
+    private void ApplyDash()
+    {
+        if (dashing)
+        {
+            //if the dash has fully finished, ends the dash
+            if (dashTime <= 0)
+            {
+                dashing = false;
+                gameObject.tag = "Player" + playerNum;
+            } else
+            {
+                gameObject.tag = "Invulnerable";
+                dashTime -= Time.deltaTime;
+                if (moveInput < 0)
+                {
+                    rb.velocity = Vector2.left * dashSpeed;
+                } else if (moveInput > 0)
+                {
+                    rb.velocity = Vector2.right * dashSpeed;
+                } else
+                {
+                    dashing = false;
+                }
+            }
+
+        }
+
+    } 
+
+
+    public void TakeDamage(int damage)
+    {
+        health -= damage;
     }
 
 

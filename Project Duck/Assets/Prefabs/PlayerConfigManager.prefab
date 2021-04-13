@@ -45,7 +45,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   maxPlayers: 2
-  readyScene: Testing
+  readyScene: PlayStage
 --- !u!114 &5644228737462296022
 MonoBehaviour:
   m_ObjectHideFlags: 0

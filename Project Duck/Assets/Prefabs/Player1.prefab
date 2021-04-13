@@ -126,8 +126,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7031451f9439c43449ab7e9ec7ab129e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  moveSpeed: 6
-  jumpHeight: 17
+  moveSpeed: 7
+  jumpHeight: 18
   startTimeBetweenShots: 0.2
   platformLayerMask:
     serializedVersion: 2
@@ -135,8 +135,12 @@ MonoBehaviour:
   gun: {fileID: 4700612643483488864}
   projectile: {fileID: 5528841021569034209, guid: 9f423bfa6d8250c4ba4f6481cad2ee96, type: 3}
   shotPoint: {fileID: 168395570306531716}
+  health: 3
   rb: {fileID: 5254837401938051420}
   boxCollider2d: {fileID: 5254837401938051421}
+  mainBox: {fileID: 5254837403581893786}
+  dashSpeed: 20
+  startDashTime: 0.25
 --- !u!1 &5254837403581893786
 GameObject:
   m_ObjectHideFlags: 0
@@ -148,7 +152,7 @@ GameObject:
   - component: {fileID: 5254837403581893787}
   - component: {fileID: 5254837403581893784}
   m_Layer: 0
-  m_Name: Square
+  m_Name: Base
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -209,7 +213,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_Sprite: {fileID: 7482667652216324306, guid: db750325989564987a34393247d883b4, type: 3}
-  m_Color: {r: 0.22166091, g: 0.21782662, b: 0.5188679, a: 1}
+  m_Color: {r: 0.65882355, g: 0.2470588, b: 0.33216855, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0

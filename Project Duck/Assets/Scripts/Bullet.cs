@@ -31,7 +31,10 @@ public class Bullet : MonoBehaviour
             {
                 Debug.Log("Player 2 got smacked yo");
             }
-            Destroy(gameObject);
+            if (!hitInfo.collider.CompareTag("Invulnerable"))
+            {
+                Destroy(gameObject);
+            }
         }
 
 
