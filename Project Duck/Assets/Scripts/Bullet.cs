@@ -23,9 +23,13 @@ public class Bullet : MonoBehaviour
         RaycastHit2D hitInfo = Physics2D.Raycast(transform.position, Vector2.right, distance, whatIsSolid);
         if (hitInfo.collider != null)
         {
-            if (hitInfo.collider.CompareTag("Player2"))
+            if (hitInfo.collider.CompareTag("Player1"))
             {
-                Debug.Log("Player damage");
+                Debug.Log("Player 1 Got HIT");
+            }
+            else if (hitInfo.collider.CompareTag("Player2"))
+            {
+                Debug.Log("Player 2 got smacked yo");
             }
             Destroy(gameObject);
         }

@@ -52,6 +52,14 @@
                     "expectedControlType": "Button",
                     "processors": "",
                     "interactions": "Hold(duration=0.01)"
+                },
+                {
+                    "name": "Select",
+                    "type": "Button",
+                    "id": "2faac255-5f92-4a87-8c07-f634472108cf",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "Hold(duration=0.01)"
                 }
             ],
             "bindings": [
@@ -283,6 +291,28 @@
                     "processors": "",
                     "groups": "Keyboard",
                     "action": "Shoot",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "a4647381-3086-4053-8d3b-d215c4ab850d",
+                    "path": "<Gamepad>/start",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Gamepad",
+                    "action": "Select",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "3548fff8-5d3d-4119-8a9d-d6b14522ad37",
+                    "path": "<Keyboard>/numpadEnter",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Keyboard",
+                    "action": "Select",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

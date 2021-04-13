@@ -36,7 +36,10 @@ public class Player : MonoBehaviour
     //Mouse and Controller Position
     private Vector2 mousePosition;
     private Vector2 controllerPosition;
-    private bool isMouse;
+    private bool isMouseAndKeyboard = true;
+
+    private PlayerConfig playerConfig;
+    private PlayerControls controls;
 
 
 
@@ -46,6 +49,7 @@ public class Player : MonoBehaviour
         //initialize variables
         rb = GetComponent<Rigidbody2D>();
         boxCollider2d = transform.GetComponent<BoxCollider2D>();
+        controls = new PlayerControls();
         
     }
     // Start is called before the first frame update
@@ -54,14 +58,55 @@ public class Player : MonoBehaviour
 
     }
 
+    public void InitializePlayer(PlayerConfig pc, int playerNum)
+    {
+        playerConfig = pc;
+        playerConfig.Input.onActionTriggered += Input_onActionTriggered;
+
+        if ("gamepad".Equals(pc.Input.currentControlScheme, System.StringComparison.InvariantCultureIgnoreCase))
+        {
+            isMouseAndKeyboard = false;
+        } else
+        {
+            isMouseAndKeyboard = true;
+        }
+
+
+        if (playerNum == 1)
+        {
+            gameObject.layer = LayerMask.NameToLayer("Player1");
+            gameObject.tag = "Player1";
+        } else
+        {
+            gameObject.layer = LayerMask.NameToLayer("Player2");
+            gameObject.tag = "Player2";
+        }
+    }
+
+    private void Input_onActionTriggered(InputAction.CallbackContext obj)
+    {
+        if (obj.action.name == controls.PlayerActions.Movement.name)
+            OnMovement(obj);
+        else if (obj.action.name == controls.PlayerActions.Jump.name)
+            OnJump(obj);
+        else if (obj.action.name == controls.PlayerActions.MouseAim.name)
+            OnMouseMove(obj);
+        else if (obj.action.name == controls.PlayerActions.ControllerAim.name)
+            OnControllerMove(obj);
+        else if (obj.action.name == controls.PlayerActions.Shoot.name)
+            OnShoot(obj);
+
+    }
+
 
     // Update is called once per frame
     void Update()
     {
+        if (!isMouseAndKeyboard)
 
         IsGrounded();
         ApplyShoot();
-        if (isMouse)
+        if (isMouseAndKeyboard)
         {
             Vector3 relativePosition = Camera.main.ScreenToWorldPoint(mousePosition) - transform.position;
             RotateGun(new Vector2(relativePosition.x, relativePosition.y));
@@ -107,7 +152,6 @@ public class Player : MonoBehaviour
     public void OnMouseMove(InputAction.CallbackContext context)
     {
         mousePosition = context.ReadValue<Vector2>();
-        isMouse = true;
 
     }
 
@@ -116,7 +160,6 @@ public class Player : MonoBehaviour
     public void OnControllerMove(InputAction.CallbackContext context)
     {
         controllerPosition = context.ReadValue<Vector2>();
-        isMouse = false;
     }
 
 

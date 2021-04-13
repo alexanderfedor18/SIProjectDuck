@@ -205,19 +205,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 34156243}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 1214239949}
-        m_TargetAssemblyTypeName: MainMenu, Assembly-CSharp
-        m_MethodName: QuitGame
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
 --- !u!114 &34156243
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -599,7 +587,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Navigation:
-    m_Mode: 2
+    m_Mode: -1
     m_WrapAround: 1
     m_SelectOnUp: {fileID: 0}
     m_SelectOnDown: {fileID: 0}
@@ -865,6 +853,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f9a568f3dda2c9d438fa46f4975c7dc7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  playSceneName: ControllerSelect
 --- !u!1 &1463897979
 GameObject:
   m_ObjectHideFlags: 0
